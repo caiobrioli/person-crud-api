@@ -2,14 +2,14 @@
 using person_crud_api.Model;
 using person_crud_api.Model.Context;
 
-namespace person_crud_api.Services.Implementations;
+namespace person_crud_api.Business.Implementations;
 
-public class PersonServiceImplementations : IPersonService
+public class PersonRepositoryImplementations : IPersonRepository
 {
     private MySqlContext _context;
-    private Person? ExistingPerson(long id) => _context.People.SingleOrDefault(p => p.Id == id);
+    public Person? ExistingPerson(long id) => _context.People.SingleOrDefault(p => p.Id == id);
 
-    public PersonServiceImplementations(MySqlContext context)
+    public PersonRepositoryImplementations(MySqlContext context)
     {
         _context = context;
     }
@@ -47,7 +47,6 @@ public class PersonServiceImplementations : IPersonService
         }
         try
         {
-            // Atualizar as propriedades da entidade existente
             _context.Entry(personExists).CurrentValues.SetValues(person);
             _context.SaveChanges();
         }
