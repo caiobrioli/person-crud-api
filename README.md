@@ -1,6 +1,6 @@
 # Person CRUD API
 
-API for registering people for study purposes.
+API for CRUD operations on people for study purposes.
 
 ## Overview
 
