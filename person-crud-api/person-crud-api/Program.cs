@@ -1,11 +1,15 @@
 using Asp.Versioning.Conventions;
 using Microsoft.EntityFrameworkCore;
 using person_crud_api.Model.Context;
-using person_crud_api.Services;
-using person_crud_api.Services.Implementations;
+using person_crud_api.Business;
+using person_crud_api.Business.Implementations;
 using Microsoft.OpenApi.Models;
 using Asp.Versioning;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using person_crud_api.Bussiness;
+using EvolveDb;
+using MySqlConnector;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,7 +39,22 @@ var connectionString = builder.Configuration.GetConnectionString("MySqlConnectio
 
 builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-builder.Services.AddScoped<IPersonService, PersonServiceImplementations>();
+
+//configurando evolve
+if (builder.Environment.IsDevelopment())
+{
+    var evolveConnection = new MySqlConnection(connectionString);
+    var evolve = new Evolve(evolveConnection, Log.Information)
+    {
+        Locations = new List<string> { "db/migrations", "db/dataset" },
+        IsEraseDisabled = true,
+    };
+    evolve.Migrate();
+}
+
+
+builder.Services.AddScoped<IPersonBusiness, PersonBussinesImplementations>();
+builder.Services.AddScoped<IPersonRepository, PersonRepositoryImplementations>();
 
 var app = builder.Build();
 
